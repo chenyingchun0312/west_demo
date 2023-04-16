@@ -1,0 +1,13 @@
+manifest:
+  remotes:
+    - name: rt-thread                                       # 这个名字可以任意, 建议有意义容易理解
+      url-base: https://github.com/RT-Thread/rt-thread      # 子模块所在URL的BASE路径 
+
+  defaults:
+    remote: rt-thread                                       # 默认的urlbase, 下列仓库如果不指定remote就使用这个base                  
+
+  projects:
+    - name: rt-thread                                       # 子仓库的名字，一般不需要修改
+      revision: master                                      # 子仓库commitid或分支名，如果期望同步至上游，仅需修改该commit信息
+      path: submodules/rt-thread                            # 子仓库下载至当前SDK的哪个位置
+     

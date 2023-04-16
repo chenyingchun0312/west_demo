@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+
+# 参考链接：https://github.com/git-hook/post-clone
+
+# 当执行git pull或者git merge，并且确实有文件更新时，在命令结束后，自动执行west update命令
+
+# 检查是否安装了python west库，注意：使用west库需要Python版本3.5或更高版本
+
+# 获取当前git仓库的根目录
+readonly repo=$(git rev-parse --show-toplevel)
+
+main() {
+    # rm -rf -- "${repo}/.git/hooks"
+    # initializeSubmodules
+    # installClonedReposHooks
+    invokeClonedReposPostCloneHook
+}
+
+# initializeSubmodules() {
+#     git submodule update --init --recursive
+# }
+
+# installClonedReposHooks() {
+#     cd "${repo}/.git"
+#     rm -rf hooks
+#     ln -sf ../hooks
+#     cd - >/dev/null
+# }
+
+invokeClonedReposPostCloneHook() {
+    # 找到当前git仓库根目录中.hooks/post-clone脚本
+    local -r post_clone_hook="${repo}/.hooks/post-clone"
+
+    # 判断是否有可执行权限，如果有则不再执行u+x
+    test ! -e "${post_clone_hook}" && return
+
+    # 无可执行权限，额外操作
+    chmod u+x "${post_clone_hook}"
+
+    # 调用./hooks/post-clone脚本
+    ${post_clone_hook}
+}
+
+# 执行函数， $@是传递的参数
+main "$@"

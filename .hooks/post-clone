@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+
+
+# 当执行git pull或者git merge，并且确实有文件更新时，在命令结束后，自动执行west update命令
+
+# 检查是否安装了python west库，注意：使用west库需要Python版本3.5或更高版本
+# if python -c "import west" &> /dev/null; then
+#   echo "west library already installed"
+# else
+#   echo "west library not found, installing..."
+#   pip3 install west -i https://mirrors.aliyun.com/pypi/simple/
+# fi
+
+# 获取当前git仓库的根目录
+readonly repo=$(git rev-parse --show-toplevel)
+
+unset GIT_DIR
+
+main() {
+
+    invokeWestUpdateHook
+}
+
+# 执行west_update
+invokeWestUpdateHook() {
+    # 找到当前git仓库根目录中.hooks/west_update脚本
+    local -r west_update="${repo}/.hooks/west_update"
+
+    # 判断是否有可执行权限，如果有则不再执行u+x
+    test ! -e "${west_update}" && return
+
+    # 无可执行权限，额外操作
+    chmod u+x "${west_update}"
+
+    # 调用.hooks/west_update脚本
+    ${west_update}
+}
+
+# 执行函数， $@是传递的参数
+main "$@"
